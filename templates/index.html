@@ -1,0 +1,250 @@
+<html>
+<head>
+  <title>A D3 map</title>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <style>
+    #map path{
+      fill: #ccc;
+      position: relative;
+      left: 50%;
+      top:  50%;
+    }
+    #satisfactionPoints path{
+      fill: #900;
+      stroke: #999;
+    }
+    #satisfactionPoints path:hover{
+      fill: black;
+    }
+
+#mapSvg {
+    z-index:2;
+    top:20%;
+    left:25%;
+    position: absolute;
+    display: block;
+}
+
+    .circle-container {
+        z-index:1;
+  position: relative;
+  width: 46em;
+  height: 46em;
+  border-radius: 50%;
+  padding: 0;
+  list-style: none;
+  margin: 5em auto 0;
+  border: solid 3px grey;
+}
+.circle-container > * {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -1.4em;
+  width: 6em;
+  height: 6em;
+}
+.circle-container > *:nth-of-type(1) {
+  -webkit-transform: rotate(270deg) translate(23em) rotate(-270deg);
+          transform: rotate(270deg) translate(23em) rotate(-270deg);
+}
+.circle-container > *:nth-of-type(2) {
+  -webkit-transform: rotate(300deg) translate(23em) rotate(-300deg);
+          transform: rotate(300deg) translate(23em) rotate(-300deg);
+}
+.circle-container > *:nth-of-type(3) {
+  -webkit-transform: rotate(330deg) translate(23em) rotate(-330deg);
+          transform: rotate(330deg) translate(23em) rotate(-330deg);
+}
+.circle-container > *:nth-of-type(4) {
+  -webkit-transform: rotate(0deg) translate(23em) rotate(0deg);
+          transform: rotate(0deg) translate(23em) rotate(0deg);
+}
+.circle-container > *:nth-of-type(5) {
+  -webkit-transform: rotate(30deg) translate(23em) rotate(-30deg);
+          transform: rotate(30deg) translate(23em) rotate(-30deg);
+}
+.circle-container > *:nth-of-type(6) {
+  -webkit-transform: rotate(60deg) translate(23em) rotate(-60deg);
+          transform: rotate(60deg) translate(23em) rotate(-60deg);
+}
+.circle-container > *:nth-of-type(7) {
+  -webkit-transform: rotate(90deg) translate(23em) rotate(-90deg);
+          transform: rotate(90deg) translate(23em) rotate(-90deg);
+}
+.circle-container > *:nth-of-type(8) {
+  -webkit-transform: rotate(120deg) translate(23em) rotate(-120deg);
+          transform: rotate(120deg) translate(23em) rotate(-120deg);
+}
+.circle-container > *:nth-of-type(9) {
+  -webkit-transform: rotate(150deg) translate(23em) rotate(-150deg);
+          transform: rotate(150deg) translate(23em) rotate(-150deg);
+}
+.circle-container > *:nth-of-type(10) {
+  -webkit-transform: rotate(180deg) translate(23em) rotate(-180deg);
+          transform: rotate(180deg) translate(23em) rotate(-180deg);
+}
+.circle-container > *:nth-of-type(11) {
+  -webkit-transform: rotate(210deg) translate(23em) rotate(-210deg);
+          transform: rotate(210deg) translate(23em) rotate(-210deg);
+}
+.circle-container > *:nth-of-type(12) {
+  -webkit-transform: rotate(240deg) translate(23em) rotate(-240deg);
+          transform: rotate(240deg) translate(23em) rotate(-240deg);
+}
+
+.circle-container button {
+  display: block;
+  max-width: 100%;
+  border-radius: 50%;
+  -webkit-filter: grayscale(100%);
+          filter: grayscale(100%);
+  border: solid 0px grey;
+  transition: 1s;
+  background-color: #4CAF50;
+    border: 0px;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    border-radius: 100%;
+    position: absolute;
+}
+.circle-container button:hover {
+  -webkit-filter: grayscale(0%);
+          filter: grayscale(0%);
+}
+.circle-container button:focus {
+    outline:0;
+    -webkit-filter: grayscale(0%);
+            filter: grayscale(0%);
+    background-color: #4CAFFF;
+}
+
+
+    
+
+  </style>
+</head>
+<body>
+
+<div id="mapDiv">
+<ul class='circle-container'>
+  <li><button class="roundBtn" onclick="monthSelected(1)" id="btn01">01</button></li>
+  <li><button class="roundBtn" onclick="monthSelected(2)">02</button></li>
+  <li><button class="roundBtn" onclick="monthSelected(3)">03</button></li>
+  <li><button class="roundBtn" onclick="monthSelected(4)">04</button></li>
+  <li><button class="roundBtn" onclick="monthSelected(5)">05</button></li>
+  <li><button class="roundBtn" onclick="monthSelected(6)">06</button></li>
+  <li><button class="roundBtn" onclick="monthSelected(7)">07</button></li>
+  <li><button class="roundBtn" onclick="monthSelected(8)">08</button></li>
+  <li><button class="roundBtn" onclick="monthSelected(9)">09</button></li>
+  <li><button class="roundBtn" onclick="monthSelected(10)">10</button></li>
+  <li><button class="roundBtn" onclick="monthSelected(11)">11</button></li>
+  <li><button class="roundBtn" onclick="monthSelected(12)">12</button></li>
+</ul>
+</div>
+
+<script>
+
+
+var HttpClient = function() {
+    this.get = function(aUrl, aCallback) {
+        var anHttpRequest = new XMLHttpRequest();
+        anHttpRequest.onreadystatechange = function() { 
+            if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200)
+                aCallback(anHttpRequest.responseText);
+        }
+
+        anHttpRequest.open( "GET", aUrl, true );            
+        anHttpRequest.send( null );
+    }
+}
+
+let client = new HttpClient();
+
+let width = 600, height = 580;
+
+let albersProjection = d3.geoAlbers()
+  .scale( 190000 )
+  .rotate( [71.057,0] )
+  .center( [0, 42.313] )
+  .translate( [width/2,height/2] );
+
+window.onload = function() {
+        document.getElementById("btn01").focus();
+    };
+
+let svg = d3.select( "body" )
+            .select("#mapDiv")
+            .append( "svg" )
+            .attr("id", "mapSVG")
+            .attr( "width", width )
+            .attr( "height", height );
+
+let map = svg.append( "g" ).attr( "id", "map" );
+
+let geoPath = d3.geoPath()
+    .projection( albersProjection );
+
+
+client.get('http://localhost:5000/satisfactionPoints/1', function(response){
+    let satisfactionPoints_json = JSON.parse(JSON.parse(response));
+    client.get('http://localhost:5000/map', function(response) {
+        let map_json = JSON.parse(JSON.parse(response));
+
+        map.selectAll( "path" )
+            .data( map_json.features )
+            .enter()
+            .append( "path" )
+            .attr( "d", geoPath );
+
+
+        svg.append("g").selectAll("circle")
+                .data(satisfactionPoints_json.features)
+                .enter()
+                .append("circle")
+                .attr( "cx", function(d){
+                    return albersProjection( d.geometry.coordinates )[0]-10;
+                })
+                .attr( "cy", function(d){
+                    return albersProjection( d.geometry.coordinates )[1]-10;
+                })
+                .attr("r", 10)
+                .style("fill", "red");
+    });
+});
+
+let monthSelected = function (month) {
+    client.get('http://localhost:5000/satisfactionPoints/'+month, function(response){
+    let satisfactionPoints_json = JSON.parse(JSON.parse(response));
+    let circle = svg.select("g").selectAll("circle")
+                        .data(satisfactionPoints_json.features);
+
+    circle.exit().remove();//remove unneeded circles
+    circle.enter().append("circle").attr("r",0);
+
+    circle.transition()
+          .duration(0)
+          .attr( "cx", function(d){
+                    return albersProjection( d.geometry.coordinates )[0]-10;
+                })
+          .attr( "cy", function(d){
+                    return albersProjection( d.geometry.coordinates )[1]-10;
+                })
+          .attr("r",10)
+          .style("fill", "red");
+
+
+    });
+
+} 
+
+
+  </script>
+</body>
+</html>
