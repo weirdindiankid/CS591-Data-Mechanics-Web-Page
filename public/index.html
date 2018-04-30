@@ -90,8 +90,8 @@
 							</header>
 							<p>Analyze Boston's 311 Service Requests records non-emergency city violations, such as improper trash disposal and illegal parking complaints, and the location of these incidents. With the understanding that the number of violations affects the quality of life on a given day in Boston, one of our aims became to find a way to serve requests in the most timely way. To make this solution concrete but also efficient, our team worked to display the minimum number of dispatchers required to respond to service within the time limit indicated by the 311 service request central.</p>
 							<p>From our analysis, we found that the period that has both the highest amount of requests and need the most dispatchers is the period associated with students moving in to universities in Boston, 28th of August to 6th of September. On the figures to the left, you can see a bar plot of both the number of service requests and number of required dispatchers, over a 10day period, as an average over all years in the same period. Other than the move-in period, the periods chosen are selected as baseline comparisons periods, selected from both during and outside of school semesters.</p>
-							<p>From these results we can see that the number of service requests increase with about 27% and minimum number of service request dispatchers increase with about 14%, from the second highest period, during move-in week. </p>
-							<p>Click <a href="https://github.com/weirdindiankid/course-2018-spr-proj/blob/master/bemullen_crussack_dharmesh_vinwah/docs/311Requests.md" style="color: #4a87d3"> here </a> for more information about our results</p>
+							<p>From the results we can see that the number of service requests and minimum number of service request dispatchers is the highest during the move in period. To be exact, number of inquiries is 47% higher than the mean and minimum number of dispatchers is 17% higher than the mean during the move in period. If we assume that the number of service requests and minimum number of dispatchers is normally distributed and the mean and standard deviation in our results are representative of the true distribution, the probability of having this high or a higher result is 7.0% for number of inquiries and 4.9% for the minimum number of service providers.</p>
+							<p>Click <a href="https://github.com/weirdindiankid/course-2018-spr-proj/blob/master/bemullen_crussack_dharmesh_vinwah/docs/311Requests.md" style="color: #4a87d3"> here </a> for more information about our approach and results</p>
 						</div>
 						<div class="6u$ 12u$(medium)">
 							<ul class="major-icons">
@@ -115,8 +115,11 @@
 							<header class="major">
 								<h2>Fire Incidents<br /></h2>
 							</header>
-							<p>description of fire incidents</p>
-						</div>
+							<p>Reported fire incidents includes everything from a smoke detector activation to an electrical fire to a cooking fire. The Boston City Score includes Boston Fire Department (BFD) incidents so we thought they would be a good indicator of the city’s performance. Our initial suspicion was that during move-in week and the time that colleges are in session the fire department would be called more frequently and the incident numbers would be higher.</p>
+                            <p>This chart depicts the number of fire incidents for the first two weeks of each month. As you can see, the number of incidents is relatively consistent with August, March, and September reporting the highest numbers.</p>
+                            <p>We must account for the fact that move-in means the general population of Boston increases and thus the amount of incidents is likely to increase. That said, during other months such as October and November when students are present there are not as many incidents as there are in August and September around the time of move-in period.</p>
+                            <p>The average number of fire incidents, for the first two weeks, for all the months is 1830.3 incidents. For the months of August and September the average is 2018 fire incidents for the first two weeks. This shows an increase of approximately 10% in fire incidents for the move-in months. The standard deviation between the months is 139.36 incidents. Assuming number of incidents is normally distributed, the probability of 2018, or more, incidents is 9%</p>
+                        </div>
 					</div>
 				</div>
 			</section>
@@ -132,7 +135,14 @@
 						</div>
 						<div class="6u$ 12u$(medium)">
 							<ul class="major-icons">
-								<li><span class="image fit"><img src="images/boston.jpeg" alt="" /></span></span></li>
+								<li><span class="image fit"><img id="sessionGraph" src="images/libraryAttendance/uni_in_and_out_of_session.jpg" alt="" /></span></span></li>
+								<li>
+									<div id="sessionSelectionBtns" class="btn-group">
+										<button id="btnInSession" onClick="sessionSelected('in')" style="width: 49%; padding: 0 0;">In Session</button>
+										<button id="btnOutOfSession" onClick="sessionSelected('out')" style="width: 49%; padding: 0 0;">Out of Session</button>
+										<button id="btnInAndOut" onClick="sessionSelected('inOut')" style="width: 99%; padding: 0 0;">Both In and Out of Session</button>
+									</div>
+								<li>
 							</ul>
 						</div>
 					</div>
@@ -196,6 +206,7 @@
 
         window.onload = function() {
             monthSelected('September')
+            sessionSelected('inOut')
         };
 
         let monthText = {
@@ -234,8 +245,47 @@
 
 		}
 
+		let sessionSelected = function(s) {
+		    let img = 'none';
+            let activeBtn = 'none';
+			if (s == 'inOut'){
+				img = 'uni_in_and_out_of_session.png';
+                activeBtn = 'btnInAndOut';
+			} else if (s == 'in'){
+				img = 'uni_in_session.png';
+                activeBtn = 'btnInSession';
+			} else {
+				img = 'uni_out_of_session.png';
+                activeBtn = 'btnOutOfSession';
+			}
+
+		    let graph = document.getElementById('sessionGraph');
+            graph.setAttribute('src', "images/libraryAttendance/"+ img);
+
+            let btnGrp = document.getElementById('sessionSelectionBtns');
+            let btns = btnGrp.querySelectorAll('*');
+            btns.forEach(function(x){
+                if (x.getAttribute('id') == activeBtn) {
+                    x.style.backgroundColor = "rgba(239, 133, 82, 0.8)";
+                } else {
+                    x.style.backgroundColor = "transparent";
+                }
+            })
+        }
+
 	</script>
 
 
 	</body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
